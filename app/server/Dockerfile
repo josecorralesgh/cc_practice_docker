@@ -17,7 +17,7 @@ RUN pip install Flask
 
 # Copiamos el codigo fuente de la aplicacion al contenedor
 # Esto incluye tanto el archivo app.py como formulario.html
-COPY app/ app/
+COPY . app/
 
 # Exponemos el puerto 5000 para Flask
 # Esto no abre el puerto, simplemente es una forma de documentacion,

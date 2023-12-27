@@ -1,21 +1,26 @@
-from flask import Flask, request, render_template
-#En esta línea 
+from flask import Flask, request, render_template, send_from_directory
+import os
+
 app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, static_url_path='/app/data/static')
+
+# Tu función para servir archivos estáticos
+@app.route('/app/data/static/<path:filename>')
+def serve_static(filename):
+    root_dir = os.path.dirname(os.getcwd())
+    return send_from_directory(os.path.join(root_dir, 'app', 'data', 'static'), filename)
+
 
 @app.route('/')
 def index():
-    # Esta funcion se asocia a la ruta raiz "/"
-    return "Bienvenido a mi aplicacion web!"
+    return "Bienvenido a mi aplicación web!"
 
 @app.route('/formulario', methods=['GET', 'POST'])
 def formulario():
-    # Esta funcion se asocia a la ruta "/formulario"
     if request.method == 'POST':
-        # Si se envia el formulario, procesamos los datos
         nombre = request.form['nombre']
         mensaje = f"Hola, {nombre}! Bienvenido a mi app web."
         return mensaje
-    # Si se accede por GET, mostramos el formulario
     return render_template('formulario.html')
 
 if __name__ == '__main__':
