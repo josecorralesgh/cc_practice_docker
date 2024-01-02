@@ -1,0 +1,78 @@
+version: '3'
+services:
+  # Servicio para la base de datos PostgreSQL
+  db:
+    container_name: postgres-container
+    build:
+      context: ./dbpostgre/
+      dockerfile: Dockerfile
+    image: postgres:latest
+    networks:
+      myapp-network:
+        ipv4_address: 10.0.0.2
+
+  # Servicio para el servidor Node.js
+  server:
+    container_name: mi-contenedor-node
+    build:
+      context: ./servernodejs/
+      dockerfile: Dockerfile
+    image: mi-servidor-node:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      myapp-network:
+        ipv4_address: 10.0.0.3
+  
+  # Servicio para la base de datos MySQL
+  mysql:
+    container_name: mysql2-container
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    image: mysql2:latest
+    networks:
+      myapp-network:
+        ipv4_address: 10.0.0.4
+
+  # Servicio para golang
+  golang:
+    container_name: mi-contenedor-go
+    build:
+      context: ./cliente-golang/
+      dockerfile: Dockerfile
+    image: mi-go-minimo
+    ports:
+      - "8080:8080"
+    networks:
+      myapp-network:
+        ipv4_address: 10.0.0.5
+
+  # Servicio para flask
+  flask:
+    container_name: mi-contenedor-flask
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    image: mi-servidor-flask
+    ports:
+      - "5000:5000"
+    networks:
+      myapp-network:
+        ipv4_address: 10.0.0.6
+    volumes:
+      - mi_volume:/app/app/static
+
+volumes:
+  mi_volume:
+
+networks:
+  myapp-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
